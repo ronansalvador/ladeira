@@ -20,22 +20,40 @@ model Cliente {
   comandas Comanda[]
 }
 
+model Baile {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  data      DateTime
+  comandas  Comanda[]
+  createdAt DateTime  @default(now())
+}
+
 model Comanda {
   id          Int       @id @default(autoincrement())
   clienteId   Int
   cliente     Cliente   @relation(fields: [clienteId], references: [id])
-  tipoEntrada String // "antecipado", "vip", "normal"
-  status      String    @default("aberta") // aberta, fechada
-  createdAt   DateTime  @default(now())
+  tipoEntrada String
   consumos    Consumo[]
+  baileId     Int
+  baile       Baile     @relation(fields: [baileId], references: [id])
+  status      String    @default("aberta") // aberta ou fechada
+  createdAt   DateTime  @default(now())
+  closedAt    DateTime?
+}
+
+model Produto {
+  id       Int       @id @default(autoincrement())
+  nome     String
+  preco    Float
+  consumos Consumo[]
 }
 
 model Consumo {
   id         Int     @id @default(autoincrement())
   comandaId  Int
   comanda    Comanda @relation(fields: [comandaId], references: [id])
-  produto    String
+  produtoId  Int
+  produto    Produto @relation(fields: [produtoId], references: [id])
   quantidade Int
-  valorUnit  Float
   subtotal   Float
 }
