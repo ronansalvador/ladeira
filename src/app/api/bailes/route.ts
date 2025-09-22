@@ -6,17 +6,29 @@ export async function GET() {
     include: {
       comandas: {
         include: {
-          cliente: true, // se quiser trazer também os dados do cliente
+          cliente: true,
           consumos: {
-            include: {
-              produto: true, // assim já vem nome/preço do produto
-            },
+            include: { produto: true },
           },
         },
       },
     },
   })
-  return NextResponse.json(bailes)
+
+  const data = bailes.map((baile) => ({
+    ...baile,
+    comandas: baile.comandas.map((c) => ({
+      ...c,
+      consumos: c.consumos.map((consumo) => ({
+        id: consumo.id,
+        descricao: consumo.produto.nome, // produto.nome vira descricao
+        quantidade: consumo.quantidade,
+        valor: consumo.produto.preco, // produto.preco vira valor
+      })),
+    })),
+  }))
+
+  return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {

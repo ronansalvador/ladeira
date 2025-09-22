@@ -32,6 +32,12 @@ export default function ControleComandasPage() {
   const [consumosMap, setConsumosMap] = useState<Record<number, Consumo[]>>({})
   const [loading, setLoading] = useState(false)
 
+  // FILTROS
+  const [filtroNome, setFiltroNome] = useState('')
+  const [filtroStatus, setFiltroStatus] = useState<
+    'todas' | 'aberta' | 'fechada'
+  >('todas')
+
   const loadData = async () => {
     setLoading(true)
 
@@ -73,18 +79,49 @@ export default function ControleComandasPage() {
     )
     if (!confirm) return
 
-    await fetch(`/api/comandas/fechar/${comanda.id}`, {
-      method: 'POST',
-    })
-
+    await fetch(`/api/comandas/fechar/${comanda.id}`, { method: 'POST' })
     const total = calcularTotal(comanda.id)
     alert(`Comanda fechada! Total: R$ ${total.toFixed(2)}`)
     loadData()
   }
 
+  // Função para filtrar comandas
+  const filtrarComandas = (comandas: Comanda[]) => {
+    return comandas.filter((c) => {
+      const matchesNome = c.cliente.nome
+        .toLowerCase()
+        .includes(filtroNome.toLowerCase())
+      const matchesStatus =
+        filtroStatus === 'todas' || c.status === filtroStatus
+      return matchesNome && matchesStatus
+    })
+  }
+
   return (
     <div className="p-4 max-w-5xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">Controle de Comandas</h1>
+
+      {/* FILTROS */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Filtrar por nome do cliente"
+          className="border rounded p-2 flex-1"
+          value={filtroNome}
+          onChange={(e) => setFiltroNome(e.target.value)}
+        />
+        <select
+          className="border rounded p-2"
+          value={filtroStatus}
+          onChange={(e) =>
+            setFiltroStatus(e.target.value as 'todas' | 'aberta' | 'fechada')
+          }
+        >
+          <option value="todas">Todas</option>
+          <option value="aberta">Abertas</option>
+          <option value="fechada">Fechadas</option>
+        </select>
+      </div>
 
       {loading ? (
         <p>Carregando...</p>
@@ -92,7 +129,7 @@ export default function ControleComandasPage() {
         <p>Nenhuma comanda encontrada.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {comandas.map((c) => {
+          {filtrarComandas(comandas).map((c) => {
             const total = calcularTotal(c.id)
             return (
               <div

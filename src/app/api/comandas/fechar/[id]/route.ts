@@ -1,13 +1,11 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse, NextRequest } from 'next/server'
 
-// POST: fechar comanda
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
-  const { id } = await context.params // <-- await aqui
-  const comandaId = parseInt(id)
+  const comandaId = parseInt(params.id)
 
   const comanda = await prisma.comanda.findUnique({
     where: { id: comandaId },
@@ -39,8 +37,8 @@ export async function POST(
 
   const fechada = await prisma.comanda.update({
     where: { id: comandaId },
-    data: { status: 'fechada', closedAt: new Date() },
+    data: { status: 'fechada', closedAt: new Date(), valorTotal: total },
   })
 
-  return NextResponse.json({ ...fechada, total })
+  return NextResponse.json(fechada)
 }

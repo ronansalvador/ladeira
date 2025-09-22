@@ -28,6 +28,19 @@ model Baile {
   createdAt DateTime  @default(now())
 }
 
+// model Comanda {
+//   id          Int       @id @default(autoincrement())
+//   clienteId   Int
+//   cliente     Cliente   @relation(fields: [clienteId], references: [id])
+//   tipoEntrada String
+//   consumos    Consumo[]
+//   baileId     Int
+//   baile       Baile     @relation(fields: [baileId], references: [id])
+//   status      String    @default("aberta") // aberta ou fechada
+//   createdAt   DateTime  @default(now())
+//   closedAt    DateTime?
+// }
+
 model Comanda {
   id          Int       @id @default(autoincrement())
   clienteId   Int
@@ -39,6 +52,7 @@ model Comanda {
   status      String    @default("aberta") // aberta ou fechada
   createdAt   DateTime  @default(now())
   closedAt    DateTime?
+  valorTotal  Float? // <-- novo campo
 }
 
 model Produto {
