@@ -1,20 +1,22 @@
 import { prisma } from '@/lib/prisma'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-// Atualizar consumo
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }, // <-- params é Promise
 ) {
   try {
+    const { id } = await context.params // <-- await aqui
+    const consumoId = Number(id)
+
     const { quantidade } = await req.json()
-    const consumoId = Number(params.id)
 
     // busca o consumo atual
     const consumoExistente = await prisma.consumo.findUnique({
       where: { id: consumoId },
       include: { produto: true },
     })
+
     if (!consumoExistente) {
       return NextResponse.json(
         { message: 'Consumo não encontrado' },
@@ -40,11 +42,12 @@ export async function PUT(
 
 // Remover consumo
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } },
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }, // <-- params é Promise
 ) {
   try {
-    const consumoId = Number(params.id)
+    const { id } = await context.params // <-- await aqui
+    const consumoId = Number(id)
 
     await prisma.consumo.delete({
       where: { id: consumoId },

@@ -33,16 +33,23 @@ export default function RelatoriosPage() {
 
   const exportPDF = () => {
     const doc = new jsPDF()
-    const tableData = relatorio.map((r) => [
+
+    // Monta os dados da tabela garantindo que não haja undefined
+    const tableData: (string | number)[][] = relatorio.map((r) => [
       r.id,
-      r.cliente?.nome,
-      r.status,
-      r.closedAt ? new Date(r.closedAt).toLocaleDateString() : '-',
+      r.cliente?.nome ?? '-', // Se cliente for undefined, coloca '-'
+      r.status ?? '-', // Se status for undefined, coloca '-'
+      r.closedAt ? new Date(r.closedAt).toLocaleDateString() : '-', // Data ou '-'
     ])
+
     autoTable(doc, {
       head: [['ID', 'Cliente', 'Status', 'Data Fechamento']],
       body: tableData,
+      startY: 20, // começa um pouco abaixo do topo
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [22, 160, 133] }, // cor do cabeçalho
     })
+
     doc.save('relatorio.pdf')
   }
 

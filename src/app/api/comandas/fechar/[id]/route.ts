@@ -4,13 +4,16 @@ import { NextResponse, NextRequest } from 'next/server'
 // POST: fechar comanda
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
-  const comandaId = parseInt(params.id)
+  const { id } = await context.params // <-- await aqui
+  const comandaId = parseInt(id)
 
   const comanda = await prisma.comanda.findUnique({
     where: { id: comandaId },
-    include: { consumos: { include: { produto: true } } },
+    include: {
+      consumos: { include: { produto: true } },
+    },
   })
 
   if (!comanda) {

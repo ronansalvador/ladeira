@@ -88,7 +88,7 @@ export default function ConsumosPage() {
     )
     if (!confirmClose) return
 
-    fetch(`/api/comandas/${comanda.id}/fechar`, { method: 'POST' })
+    fetch(`/api/comandas/fechar/${comanda.id}`, { method: 'POST' })
       .then(() => {
         const total = calcularTotal(comanda.id)
         alert(`Comanda fechada! Total: R$ ${total.toFixed(2)}`)

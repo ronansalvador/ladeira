@@ -73,7 +73,7 @@ export default function ControleComandasPage() {
     )
     if (!confirm) return
 
-    await fetch(`/api/comandas/${comanda.id}/fechar`, {
+    await fetch(`/api/comandas/fechar/${comanda.id}`, {
       method: 'POST',
     })
 

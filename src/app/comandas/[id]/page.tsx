@@ -112,7 +112,7 @@ export default function EditComandaPage() {
     )
     if (!confirmClose) return
 
-    await fetch(`/api/comandas/${comanda.id}/fechar`, { method: 'POST' })
+    await fetch(`/api/comandas/fechar/${comanda.id}`, { method: 'POST' })
     setComanda({
       ...comanda,
       status: 'fechada',

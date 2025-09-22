@@ -92,7 +92,7 @@ export default function BailesPage() {
                 </span>
               </div>
 
-              {b.comandas?.length > 0 && (
+              {Array.isArray(b.comandas) && b.comandas.length > 0 && (
                 <div className="mt-2">
                   <h4 className="font-medium text-gray-700 mb-1">Comandas:</h4>
                   <ul className="list-disc list-inside text-gray-600 space-y-1">
