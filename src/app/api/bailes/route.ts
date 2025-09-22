@@ -3,7 +3,18 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   const bailes = await prisma.baile.findMany({
-    include: { comandas: true },
+    include: {
+      comandas: {
+        include: {
+          cliente: true, // se quiser trazer também os dados do cliente
+          consumos: {
+            include: {
+              produto: true, // assim já vem nome/preço do produto
+            },
+          },
+        },
+      },
+    },
   })
   return NextResponse.json(bailes)
 }

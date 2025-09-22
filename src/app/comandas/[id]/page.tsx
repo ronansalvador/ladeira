@@ -61,7 +61,7 @@ export default function EditComandaPage() {
 
   const calcularTotal = () =>
     consumos.reduce(
-      (acc, item) => acc + item.quantidade * item.produto.preco,
+      (acc, item) => acc + item.quantidade * (item.produto?.preco ?? 0),
       0,
     )
 
@@ -140,8 +140,8 @@ export default function EditComandaPage() {
         {consumos.map((item) => (
           <li key={item.id} className="flex items-center justify-between gap-2">
             <span>
-              {item.produto.nome} → R$
-              {(item.produto.preco * item.quantidade).toFixed(2)}
+              {item.produto?.nome ?? 'Produto não encontrado'} → R$
+              {((item.produto?.preco ?? 0) * item.quantidade).toFixed(2)}
             </span>
             {comanda.status === 'aberta' && (
               <div className="flex items-center gap-2">

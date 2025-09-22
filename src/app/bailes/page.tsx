@@ -40,6 +40,8 @@ export default function BailesPage() {
     fetchBailes()
   }
 
+  console.log(bailes)
+
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">Gerenciar Bailes</h1>
