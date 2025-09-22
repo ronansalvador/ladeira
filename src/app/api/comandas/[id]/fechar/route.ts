@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 
+// POST: fechar comanda
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } },
 ) {
   const comandaId = parseInt(params.id)
@@ -41,8 +42,9 @@ export async function POST(
   return NextResponse.json({ ...fechada, total })
 }
 
+// GET: buscar comanda
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } },
 ) {
   const comandaId = parseInt(params.id)
