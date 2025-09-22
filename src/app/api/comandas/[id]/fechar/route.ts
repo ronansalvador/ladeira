@@ -41,25 +41,3 @@ export async function POST(
 
   return NextResponse.json({ ...fechada, total })
 }
-
-// GET: buscar comanda
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const comandaId = parseInt(params.id)
-
-  const comanda = await prisma.comanda.findUnique({
-    where: { id: comandaId },
-    include: { consumos: { include: { produto: true } }, cliente: true },
-  })
-
-  if (!comanda) {
-    return NextResponse.json(
-      { error: 'Comanda não encontrada' },
-      { status: 404 },
-    )
-  }
-
-  return NextResponse.json(comanda)
-}

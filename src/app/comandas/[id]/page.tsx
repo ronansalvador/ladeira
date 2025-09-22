@@ -40,7 +40,7 @@ export default function EditComandaPage() {
       setLoading(true)
       try {
         // carrega a comanda com consumos
-        const res = await fetch(`/api/comandas/${params.id}/fechar`)
+        const res = await fetch(`/api/comandas/${params.id}`)
         const data: Comanda = await res.json()
         console.log(params.id)
         setComanda(data)
