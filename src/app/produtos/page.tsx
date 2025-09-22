@@ -1,8 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
 
+interface Produto {
+  id: number
+  nome: string
+  preco: number
+}
+
 export default function ProdutosPage() {
-  const [produtos, setProdutos] = useState<any[]>([])
+  const [produtos, setProdutos] = useState<Produto[]>([])
   const [nome, setNome] = useState('')
   const [preco, setPreco] = useState('')
   const [editId, setEditId] = useState<number | null>(null)
@@ -10,7 +16,7 @@ export default function ProdutosPage() {
   // carregar produtos
   const loadProdutos = async () => {
     const res = await fetch('/api/produtos')
-    const data = await res.json()
+    const data: Produto[] = await res.json()
     setProdutos(data)
   }
 
@@ -44,9 +50,9 @@ export default function ProdutosPage() {
     loadProdutos()
   }
 
-  const editProduto = (produto: any) => {
+  const editProduto = (produto: Produto) => {
     setNome(produto.nome)
-    setPreco(produto.preco)
+    setPreco(produto.preco.toString())
     setEditId(produto.id)
   }
 

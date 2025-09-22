@@ -1,14 +1,34 @@
 'use client'
 import { useState, useEffect } from 'react'
 
+interface Cliente {
+  id: number
+  nome: string
+}
+
+interface Baile {
+  id: number
+  nome: string
+  data: string
+}
+
+interface Comanda {
+  id: number
+  cliente: Cliente
+  baile: Baile
+  tipoEntrada: 'normal' | 'vip' | 'antecipado'
+  status: 'aberta' | 'fechada'
+}
+
 export default function Comandas() {
-  const [clientes, setClientes] = useState<any[]>([])
-  const [bailes, setBailes] = useState<any[]>([])
-  const [comandas, setComandas] = useState<any[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [bailes, setBailes] = useState<Baile[]>([])
+  const [comandas, setComandas] = useState<Comanda[]>([])
 
   const [clienteId, setClienteId] = useState('')
   const [baileId, setBaileId] = useState('')
-  const [tipoEntrada, setTipoEntrada] = useState('normal')
+  const [tipoEntrada, setTipoEntrada] =
+    useState<Comanda['tipoEntrada']>('normal')
 
   useEffect(() => {
     fetch('/api/clientes')
@@ -92,7 +112,9 @@ export default function Comandas() {
           </label>
           <select
             value={tipoEntrada}
-            onChange={(e) => setTipoEntrada(e.target.value)}
+            onChange={(e) =>
+              setTipoEntrada(e.target.value as Comanda['tipoEntrada'])
+            }
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="normal">Normal</option>

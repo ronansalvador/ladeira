@@ -19,19 +19,17 @@ export async function POST(
     )
   }
 
-  // soma do consumo
   const totalConsumo = comanda.consumos.reduce(
     (acc, c) => acc + c.quantidade * c.produto.preco,
     0,
   )
 
-  // valores de entrada (exemplo simples)
   const valorEntrada =
     comanda.tipoEntrada === 'vip'
       ? 0
       : comanda.tipoEntrada === 'antecipado'
-      ? 20
-      : 30
+      ? 25
+      : 35
 
   const total = valorEntrada + totalConsumo
 
@@ -41,4 +39,25 @@ export async function POST(
   })
 
   return NextResponse.json({ ...fechada, total })
+}
+
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  const comandaId = parseInt(params.id)
+
+  const comanda = await prisma.comanda.findUnique({
+    where: { id: comandaId },
+    include: { consumos: { include: { produto: true } }, cliente: true },
+  })
+
+  if (!comanda) {
+    return NextResponse.json(
+      { error: 'Comanda não encontrada' },
+      { status: 404 },
+    )
+  }
+
+  return NextResponse.json(comanda)
 }

@@ -1,17 +1,26 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
+
+type Relatorio = {
+  id: number
+  cliente?: {
+    nome: string
+  }
+  status: string
+  closedAt?: string | null
+}
 
 export default function RelatoriosPage() {
   const [data, setData] = useState('')
-  const [relatorio, setRelatorio] = useState<any[]>([])
+  const [relatorio, setRelatorio] = useState<Relatorio[]>([])
 
   const fetchRelatorio = async () => {
     if (!data) return
     const res = await fetch(`/api/relatorios/consumo?data=${data}`)
-    const dados = await res.json()
+    const dados: Relatorio[] = await res.json()
     setRelatorio(dados)
   }
 
@@ -30,7 +39,7 @@ export default function RelatoriosPage() {
       r.status,
       r.closedAt ? new Date(r.closedAt).toLocaleDateString() : '-',
     ])
-    ;(doc as any).autoTable({
+    autoTable(doc, {
       head: [['ID', 'Cliente', 'Status', 'Data Fechamento']],
       body: tableData,
     })

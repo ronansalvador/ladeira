@@ -1,14 +1,26 @@
 'use client'
 import { useState, useEffect } from 'react'
 
+interface Comanda {
+  id: number
+  status: string
+}
+
+interface Baile {
+  id: number
+  nome: string
+  data: string
+  comandas?: Comanda[]
+}
+
 export default function BailesPage() {
-  const [bailes, setBailes] = useState<any[]>([])
+  const [bailes, setBailes] = useState<Baile[]>([])
   const [nome, setNome] = useState('')
   const [data, setData] = useState('')
 
   const fetchBailes = async () => {
     const res = await fetch('/api/bailes')
-    const data = await res.json()
+    const data: Baile[] = await res.json()
     setBailes(data)
   }
 
@@ -84,7 +96,7 @@ export default function BailesPage() {
                 <div className="mt-2">
                   <h4 className="font-medium text-gray-700 mb-1">Comandas:</h4>
                   <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {b.comandas.map((c: any) => (
+                    {b.comandas.map((c) => (
                       <li key={c.id}>
                         Comanda #{c.id} - {c.status}
                       </li>

@@ -1,68 +1,35 @@
-// 'use client'
-// import { useState, useEffect } from 'react'
-
-// export default function ControleComandasPage() {
-//   const [comandas, setComandas] = useState<any[]>([])
-
-//   const fetchComandas = async () => {
-//     const res = await fetch('/api/comandas')
-//     const data = await res.json()
-//     setComandas(data)
-//   }
-
-//   useEffect(() => {
-//     fetchComandas()
-//   }, [])
-
-//   const fecharComanda = async (id: number) => {
-//     await fetch(`/api/comandas/${id}/fechar`, {
-//       method: 'POST',
-//     })
-//     fetchComandas()
-//   }
-
-//   return (
-//     <div>
-//       <h1>Controle de Comandas</h1>
-//       <table border={1} cellPadding={5}>
-//         <thead>
-//           <tr>
-//             <th>ID</th>
-//             <th>Cliente</th>
-//             <th>Status</th>
-//             <th>Abertura</th>
-//             <th>Fechamento</th>
-//             <th>Ações</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {comandas.map((c) => (
-//             <tr key={c.id}>
-//               <td>{c.id}</td>
-//               <td>{c.cliente?.nome}</td>
-//               <td>{c.status}</td>
-//               <td>{new Date(c.createdAt).toLocaleString()}</td>
-//               <td>
-//                 {c.closedAt ? new Date(c.closedAt).toLocaleString() : '-'}
-//               </td>
-//               <td>
-//                 {c.status === 'aberta' && (
-//                   <button onClick={() => fecharComanda(c.id)}>Fechar</button>
-//                 )}
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   )
-// }
 'use client'
 import { useState, useEffect } from 'react'
 
+interface Cliente {
+  id: number
+  nome: string
+}
+
+interface Produto {
+  id: number
+  nome: string
+  preco: number
+}
+
+interface Consumo {
+  id: number
+  comandaId: number
+  produto: Produto
+  quantidade: number
+}
+
+interface Comanda {
+  id: number
+  cliente: Cliente
+  status: 'aberta' | 'fechada'
+  createdAt: string
+  closedAt?: string
+}
+
 export default function ControleComandasPage() {
-  const [comandas, setComandas] = useState<any[]>([])
-  const [consumosMap, setConsumosMap] = useState<Record<number, any[]>>({})
+  const [comandas, setComandas] = useState<Comanda[]>([])
+  const [consumosMap, setConsumosMap] = useState<Record<number, Consumo[]>>({})
   const [loading, setLoading] = useState(false)
 
   const loadData = async () => {
@@ -70,16 +37,16 @@ export default function ControleComandasPage() {
 
     // Pega as comandas
     const comandasRes = await fetch('/api/comandas')
-    const comandasData = await comandasRes.json()
+    const comandasData: Comanda[] = await comandasRes.json()
     setComandas(comandasData)
 
     // Pega todos os consumos
     const consumosRes = await fetch('/api/consumos')
-    const consumosData = await consumosRes.json()
+    const consumosData: Consumo[] = await consumosRes.json()
 
     // Cria um mapa de consumos por comandaId
-    const map: Record<number, any[]> = {}
-    consumosData.forEach((c: any) => {
+    const map: Record<number, Consumo[]> = {}
+    consumosData.forEach((c) => {
       if (!map[c.comandaId]) map[c.comandaId] = []
       map[c.comandaId].push(c)
     })
@@ -100,7 +67,7 @@ export default function ControleComandasPage() {
     )
   }
 
-  const fecharComanda = async (comanda: any) => {
+  const fecharComanda = async (comanda: Comanda) => {
     const confirm = window.confirm(
       `Deseja fechar a comanda #${comanda.id} de ${comanda.cliente?.nome}?`,
     )

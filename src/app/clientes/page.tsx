@@ -1,15 +1,21 @@
 'use client'
 import { useState, useEffect } from 'react'
 
+interface Cliente {
+  id: number
+  nome: string
+  telefone: string
+}
+
 export default function Clientes() {
-  const [clientes, setClientes] = useState<any[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [nome, setNome] = useState('')
   const [telefone, setTelefone] = useState('')
 
   useEffect(() => {
     fetch('/api/clientes')
       .then((res) => res.json())
-      .then(setClientes)
+      .then((data: Cliente[]) => setClientes(data))
   }, [])
 
   const addCliente = async () => {
@@ -21,7 +27,9 @@ export default function Clientes() {
     })
     setNome('')
     setTelefone('')
-    const data = await fetch('/api/clientes').then((res) => res.json())
+    const data: Cliente[] = await fetch('/api/clientes').then((res) =>
+      res.json(),
+    )
     setClientes(data)
   }
 
