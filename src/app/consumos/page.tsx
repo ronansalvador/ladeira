@@ -314,8 +314,24 @@ export default function BailesPage() {
 
                       {c.status === 'fechada' && (
                         <div className="mt-3 font-semibold text-green-700">
-                          Total: Entrada R${entrada.toFixed(2)} + Consumo R$
-                          {consumo.toFixed(2)} = R${total.toFixed(2)}
+                          {
+                            <p>
+                              {c.tipoEntrada} - R${entrada.toFixed(2)}
+                            </p>
+                          }
+                          {c.tipoEntrada == 'normal' ? (
+                            <>
+                              Consumo: R$
+                              {consumo.toFixed(2)}
+                              <br />
+                              Total: R${total.toFixed(2)}
+                            </>
+                          ) : (
+                            <>
+                              Consumo: R$
+                              {consumo.toFixed(2)}
+                            </>
+                          )}
                         </div>
                       )}
                     </div>
