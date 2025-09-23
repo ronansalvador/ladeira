@@ -19,9 +19,11 @@ interface Comanda {
   id: number
   cliente: { id: number; nome: string }
   status: 'aberta' | 'fechada'
+  tipoEntrada: string
   createdAt: string
   closedAt?: string
   consumos?: Consumo[]
+  baile?: { id: number; nome: string; data: string } // 👈 novo
 }
 
 export default function EditComandaPage() {
@@ -42,7 +44,6 @@ export default function EditComandaPage() {
         // carrega a comanda com consumos
         const res = await fetch(`/api/comandas/${params.id}`)
         const data: Comanda = await res.json()
-        console.log(params.id)
         setComanda(data)
         setConsumos(data.consumos || [])
 
@@ -55,9 +56,14 @@ export default function EditComandaPage() {
       }
       setLoading(false)
     }
-
     loadData()
   }, [params.id])
+
+  const calcularEntrada = (tipoEntrada: string) => {
+    if (tipoEntrada === 'vip') return 0
+    if (tipoEntrada === 'antecipado') return 25
+    return 35 // normal
+  }
 
   const calcularTotal = () =>
     consumos.reduce(
@@ -100,7 +106,14 @@ export default function EditComandaPage() {
       }),
     })
     const novoConsumo: Consumo = await res.json()
-    setConsumos((prev) => [...prev, novoConsumo])
+
+    // injeta o produto completo (senão aparece "Produto não encontrado")
+    // const produto = produtos.find((p) => p.id === Number(produtoId))
+    // const consumoComProduto = { ...novoConsumo, produto }
+
+    const produto = produtos.find((p) => p.id === Number(produtoId))!
+    const consumoComProduto: Consumo = { ...novoConsumo, produto }
+    setConsumos((prev) => [...prev, consumoComProduto])
     setProdutoId('')
     setQuantidade(1)
   }
@@ -120,64 +133,120 @@ export default function EditComandaPage() {
     })
   }
 
-  if (loading) return <p>Carregando...</p>
-  if (!comanda) return <p>Comanda não encontrada</p>
+  if (loading) return <p className="p-4">Carregando...</p>
+  if (!comanda) return <p className="p-4">Comanda não encontrada</p>
+
+  const entrada = calcularEntrada(comanda.tipoEntrada)
+  const totalGeral = entrada + calcularTotal()
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Editar Comanda #{comanda.id}</h1>
-      <p>Cliente: {comanda.cliente.nome}</p>
-      <p>Status: {comanda.status}</p>
+    <div className="p-4 max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <h1 className="text-2xl font-bold">
+        Comanda #{comanda.id} – {comanda.cliente.nome}
+      </h1>
+      {/* <p>Status: {comanda.status}</p> */}
+      <p>
+        Status:{' '}
+        <span
+          className={`px-2 py-1 rounded-full text-white text-sm ${
+            comanda.status === 'aberta' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {comanda.status}
+        </span>
+      </p>
       <p>Abertura: {new Date(comanda.createdAt).toLocaleString()}</p>
       <p>
         Fechamento:{' '}
         {comanda.closedAt ? new Date(comanda.closedAt).toLocaleString() : '-'}
       </p>
 
-      <h2 className="font-semibold mt-4">Consumos</h2>
-      {consumos.length === 0 && <p>Nenhum consumo registrado.</p>}
-      <ul className="text-gray-600 mt-2 space-y-2">
-        {consumos.map((item) => (
-          <li key={item.id} className="flex items-center justify-between gap-2">
-            <span>
-              {item.produto?.nome ?? 'Produto não encontrado'} → R$
-              {((item.produto?.preco ?? 0) * item.quantidade).toFixed(2)}
-            </span>
-            {comanda.status === 'aberta' && (
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min={1}
-                  value={item.quantidade}
-                  onChange={(e) =>
-                    editarConsumo(item.id, Number(e.target.value))
-                  }
-                  className="border p-1 w-16 rounded"
-                />
-                <button
-                  onClick={() => removerConsumo(item.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                >
-                  X
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {/* Nome e data do baile */}
 
+      {comanda.baile && (
+        <p className="">
+          Baile: <span className="font-semibold">{comanda.baile.nome}</span> –{' '}
+          {new Date(comanda.baile.data).toLocaleDateString()}
+        </p>
+      )}
+
+      {/* Resumo */}
+      <div className="border-1 shadow-md rounded-2xl p-4">
+        <p>
+          Entrada:{' '}
+          <span className="font-semibold">R$ {entrada.toFixed(2)}</span> (
+          {comanda.tipoEntrada})
+        </p>
+        <p>
+          Consumos:{' '}
+          <span className="font-semibold">R$ {calcularTotal().toFixed(2)}</span>
+        </p>
+        <p className="text-lg font-bold text-green-700 mt-2">
+          Total: R$ {totalGeral.toFixed(2)}
+        </p>
+      </div>
+
+      {/* Lista de consumos */}
+      <div className=" border-1 shadow-md rounded-2xl p-4">
+        <h2 className="text-xl font-semibold mb-4">Consumos</h2>
+        {consumos.length === 0 && (
+          <p className="text-gray-500">Nenhum consumo registrado.</p>
+        )}
+
+        <ul className="space-y-3">
+          {consumos.map((item) => (
+            <li
+              key={item.id}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border rounded-xl p-3"
+            >
+              <div>
+                <p className="font-medium">
+                  {item.produto?.nome ?? 'Produto não encontrado'}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {item.quantidade} × R${item.produto?.preco.toFixed(2)}
+                </p>
+              </div>
+
+              {comanda.status === 'aberta' && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    value={item.quantidade}
+                    onChange={(e) =>
+                      editarConsumo(item.id, Number(e.target.value))
+                    }
+                    className="border p-1 w-20 rounded"
+                  />
+                  <button
+                    onClick={() => removerConsumo(item.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                  >
+                    Remover
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Form adicionar consumo + fechar comanda */}
       {comanda.status === 'aberta' && (
-        <div className="space-y-4 mt-4">
-          <div className="flex gap-2">
+        <div className=" border-1 shadow-md rounded-2xl p-4 space-y-4">
+          <h2 className="text-lg font-semibold">Adicionar Consumo</h2>
+          <div className="flex flex-col sm:flex-row gap-2">
             <select
               value={produtoId}
               onChange={(e) => setProdutoId(e.target.value)}
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded flex-1"
             >
               <option value="">Selecione um produto</option>
               {produtos.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.nome} - R${p.preco.toFixed(2)}
+                  {p.nome} – R${p.preco.toFixed(2)}
                 </option>
               ))}
             </select>
@@ -186,11 +255,11 @@ export default function EditComandaPage() {
               min={1}
               value={quantidade}
               onChange={(e) => setQuantidade(Number(e.target.value))}
-              className="border p-2 rounded w-20"
+              className="border p-2 rounded w-24"
             />
             <button
               onClick={adicionarConsumo}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
             >
               +
             </button>
@@ -204,10 +273,6 @@ export default function EditComandaPage() {
           </button>
         </div>
       )}
-
-      <p className="mt-4 font-semibold text-green-700">
-        Total: R$ {calcularTotal().toFixed(2)}
-      </p>
     </div>
   )
 }

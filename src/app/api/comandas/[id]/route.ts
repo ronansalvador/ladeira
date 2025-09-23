@@ -17,7 +17,11 @@ export async function GET(
 
   const comanda = await prisma.comanda.findUnique({
     where: { id: comandaId },
-    include: { consumos: { include: { produto: true } }, cliente: true },
+    include: {
+      consumos: { include: { produto: true } },
+      cliente: true,
+      baile: true, // 👈 agora traz nome, data etc.
+    },
   })
 
   if (!comanda) {
