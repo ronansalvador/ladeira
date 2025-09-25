@@ -1,30 +1,31 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { Comanda, Consumo, Produto } from '@/app/types'
 
-interface Produto {
-  id: number
-  nome: string
-  preco: number
-}
+// interface Produto {
+//   id: number
+//   nome: string
+//   preco: number
+// }
 
-interface Consumo {
-  id: number
-  comandaId: number
-  produto: Produto
-  quantidade: number
-}
+// interface Consumo {
+//   id: number
+//   comandaId: number
+//   produto: Produto
+//   quantidade: number
+// }
 
-interface Comanda {
-  id: number
-  cliente: { id: number; nome: string }
-  status: 'aberta' | 'fechada'
-  tipoEntrada: string
-  createdAt: string
-  closedAt?: string
-  consumos?: Consumo[]
-  baile?: { id: number; nome: string; data: string } // 👈 novo
-}
+// interface Comanda {
+//   id: number
+//   cliente: { id: number; nome: string }
+//   status: 'aberta' | 'fechada'
+//   tipoEntrada: string
+//   createdAt: string
+//   closedAt?: string
+//   consumos?: Consumo[]
+//   baile?: { id: number; nome: string; data: string } // 👈 novo
+// }
 
 export default function EditComandaPage() {
   const params = useParams()

@@ -1,24 +1,27 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { Baile, Cliente, Comanda } from '../types'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-interface Cliente {
-  id: number
-  nome: string
-}
+// interface Cliente {
+//   id: number
+//   nome: string
+// }
 
-interface Baile {
-  id: number
-  nome: string
-  data: string
-}
+// interface Baile {
+//   id: number
+//   nome: string
+//   data: string
+// }
 
-interface Comanda {
-  id: number
-  cliente: Cliente
-  baile: Baile
-  tipoEntrada: 'normal' | 'vip' | 'antecipado'
-  status: 'aberta' | 'fechada'
-}
+// interface Comanda {
+//   id: number
+//   cliente: Cliente
+//   baile: Baile
+//   tipoEntrada: 'normal' | 'vip' | 'antecipado'
+//   status: 'aberta' | 'fechada'
+// }
 
 export default function Comandas() {
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -61,6 +64,7 @@ export default function Comandas() {
     })
 
     const data = await fetch('/api/comandas').then((res) => res.json())
+    toast.success('Comanda criada com sucesso')
     setComandas(data)
 
     setClienteId('')
@@ -134,7 +138,7 @@ export default function Comandas() {
       </div>
 
       {/* Lista de comandas */}
-      <div>
+      {/* <div>
         <h2 className="text-xl font-semibold mb-2">Comandas Abertas</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {comandas.map((c) => (
@@ -157,7 +161,8 @@ export default function Comandas() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
+      <ToastContainer />
     </div>
   )
 }

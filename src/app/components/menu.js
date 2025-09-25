@@ -9,7 +9,7 @@ export default function Menu() {
             href="/comandas"
             className="text-gray-800 hover:text-blue-500 font-medium"
           >
-            Comandas
+            Criar Comanda
           </Link>
         </li>
         <li>
@@ -33,7 +33,7 @@ export default function Menu() {
             href="/consumos"
             className="text-gray-800 hover:text-blue-500 font-medium"
           >
-            Consumos
+            Comandas
           </Link>
         </li>
         <li>
@@ -44,14 +44,14 @@ export default function Menu() {
             Bailes
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link
             href="/comandas/gerenciar"
             className="text-gray-800 hover:text-blue-500 font-medium"
           >
             Editar Comandas
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link
             href="/relatorios"

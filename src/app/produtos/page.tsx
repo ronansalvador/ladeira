@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { Produto } from '../types'
 
-interface Produto {
-  id: number
-  nome: string
-  preco: number
-}
+// interface Produto {
+//   id: number
+//   nome: string
+//   preco: number
+// }
 
 export default function ProdutosPage() {
   const [produtos, setProdutos] = useState<Produto[]>([])

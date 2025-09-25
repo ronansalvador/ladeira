@@ -1,17 +1,18 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { Baile } from '../types'
 
-interface Comanda {
-  id: number
-  status: string
-}
+// interface Comanda {
+//   id: number
+//   status: string
+// }
 
-interface Baile {
-  id: number
-  nome: string
-  data: string
-  comandas?: Comanda[]
-}
+// interface Baile {
+//   id: number
+//   nome: string
+//   data: string
+//   comandas?: Comanda[]
+// }
 
 export default function BailesPage() {
   const [bailes, setBailes] = useState<Baile[]>([])

@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { Cliente } from '../types'
 
-interface Cliente {
-  id: number
-  nome: string
-  telefone: string
-}
+// interface Cliente {
+//   id: number
+//   nome: string
+//   telefone: string
+// }
 
 export default function Clientes() {
   const [clientes, setClientes] = useState<Cliente[]>([])

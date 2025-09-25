@@ -3,15 +3,7 @@ import { useState } from 'react'
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-
-type Relatorio = {
-  id: number
-  cliente?: {
-    nome: string
-  }
-  status: string
-  closedAt?: string | null
-}
+import { Relatorio } from '../types'
 
 export default function RelatoriosPage() {
   const [data, setData] = useState('')
