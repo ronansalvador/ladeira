@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react'
 import { Baile, Cliente, Comanda } from '../types'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Select from 'react-select'
 
 export default function Comandas() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [bailes, setBailes] = useState<Baile[]>([])
   const [comandas, setComandas] = useState<Comanda[]>([])
 
-  const [clienteId, setClienteId] = useState('')
+  const [clienteId, setClienteId] = useState<number | ''>('')
   const [baileId, setBaileId] = useState('')
   const [tipoEntrada, setTipoEntrada] =
     useState<Comanda['tipoEntrada']>('normal')
@@ -54,6 +55,11 @@ export default function Comandas() {
     setTipoEntrada('normal')
   }
 
+  const clienteOptions = clientes.map((c) => ({
+    value: c.id,
+    label: c.nome,
+  }))
+
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">Controle de Comandas</h1>
@@ -62,7 +68,7 @@ export default function Comandas() {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-end">
         <div className="flex flex-col">
           <label className="mb-1 font-medium text-gray-700">Cliente</label>
-          <select
+          {/* <select
             value={clienteId}
             onChange={(e) => setClienteId(e.target.value)}
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -73,7 +79,16 @@ export default function Comandas() {
                 {c.nome}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            value={clienteOptions.find((o) => o.value === clienteId) || null}
+            onChange={(selected) =>
+              setClienteId(selected ? selected.value : '')
+            }
+            options={clienteOptions}
+            placeholder="Selecione cliente"
+            isClearable
+          />
         </div>
 
         <div className="flex flex-col">
