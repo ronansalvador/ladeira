@@ -4,25 +4,6 @@ import { Baile, Cliente, Comanda } from '../types'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-// interface Cliente {
-//   id: number
-//   nome: string
-// }
-
-// interface Baile {
-//   id: number
-//   nome: string
-//   data: string
-// }
-
-// interface Comanda {
-//   id: number
-//   cliente: Cliente
-//   baile: Baile
-//   tipoEntrada: 'normal' | 'vip' | 'antecipado'
-//   status: 'aberta' | 'fechada'
-// }
-
 export default function Comandas() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [bailes, setBailes] = useState<Baile[]>([])
@@ -64,6 +45,7 @@ export default function Comandas() {
     })
 
     const data = await fetch('/api/comandas').then((res) => res.json())
+    console.log('data', data)
     toast.success('Comanda criada com sucesso')
     setComandas(data)
 

@@ -13,6 +13,9 @@ export async function GET() {
         },
       },
     },
+    orderBy: {
+      data: 'desc', // ou 'createdAt' se quiser pela data de criação
+    },
   })
 
   const data = bailes.map((baile) => ({
