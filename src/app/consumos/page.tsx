@@ -3,35 +3,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Baile, Comanda, Consumo } from '../types'
 
-// interface Cliente {
-//   id: number
-//   nome: string
-// }
-
-// interface Consumo {
-//   id: number
-//   descricao: string
-//   quantidade: number
-//   valor: number
-// }
-
-// interface Comanda {
-//   id: number
-//   cliente: Cliente
-//   status: 'aberta' | 'fechada'
-//   createdAt: string
-//   closedAt?: string
-//   tipoEntrada: 'vip' | 'antecipado' | 'normal'
-//   consumos?: Consumo[]
-// }
-
-// interface Baile {
-//   id: number
-//   nome: string
-//   data: string
-//   comandas?: Comanda[]
-// }
-
 export default function BailesPage() {
   const router = useRouter()
   const [bailes, setBailes] = useState<Baile[]>([])
@@ -72,12 +43,12 @@ export default function BailesPage() {
   const filtrarComandas = (comandas?: Comanda[]) => {
     if (!comandas) return []
     return comandas.filter((c) => {
-      const matchesNome = c.cliente.nome
-        .toLowerCase()
-        .includes(filtroNome.toLowerCase())
+      const filtroLower = filtroNome.toLowerCase()
+      const matchesNome = c.cliente.nome.toLowerCase().includes(filtroLower)
+      const matchesId = c.id.toString().includes(filtroLower) // verifica se o input bate com o id da comanda
       const matchesStatus =
         filtroStatus === 'todas' || c.status === filtroStatus
-      return matchesNome && matchesStatus
+      return (matchesNome || matchesId) && matchesStatus
     })
   }
 

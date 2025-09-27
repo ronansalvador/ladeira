@@ -13,6 +13,7 @@ export interface Consumo {
 }
 
 export interface Comanda {
+  valor: number
   id: number
   cliente: Cliente
   status: 'aberta' | 'fechada'
@@ -27,7 +28,7 @@ export interface Baile {
   id: number
   nome: string
   data: string
-  comandas?: Comanda[]
+  comandas: Comanda[]
 }
 
 export interface Produto {
