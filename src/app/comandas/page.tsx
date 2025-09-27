@@ -24,9 +24,9 @@ export default function Comandas() {
       .then((res) => res.json())
       .then(setBailes)
 
-    fetch('/api/comandas')
-      .then((res) => res.json())
-      .then(setComandas)
+    // fetch('/api/comandas')
+    //   .then((res) => res.json())
+    //   .then(setComandas)
   }, [])
 
   const addComanda = async () => {
