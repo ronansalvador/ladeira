@@ -39,8 +39,9 @@ export default function Clientes() {
       <h1 className="text-2xl font-bold">Cadastro de Clientes</h1>
 
       {/* Formulário */}
+
       <div className="flex flex-col sm:flex-row gap-2 items-end">
-        <div className="flex-1 flex flex-col">
+        <div className="w-full sm:flex-1 flex flex-col">
           <label className="mb-1 font-medium text-gray-700">Nome</label>
           <input
             value={nome}
@@ -49,7 +50,8 @@ export default function Clientes() {
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
-        <div className="flex-1 flex flex-col">
+
+        <div className="w-full sm:flex-1 flex flex-col">
           <label className="mb-1 font-medium text-gray-700">Telefone</label>
           <input
             value={telefone}
@@ -58,9 +60,10 @@ export default function Clientes() {
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
+
         <button
           onClick={addCliente}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition w-full sm:w-auto"
         >
           Adicionar
         </button>

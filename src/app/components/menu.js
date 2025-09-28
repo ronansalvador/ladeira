@@ -13,7 +13,7 @@ export default function Menu() {
     { href: '/produtos', label: 'Produtos' },
     { href: '/consumos', label: 'Comandas' },
     { href: '/bailes', label: 'Bailes' },
-    { href: '/relatorios', label: 'Relatórios' },
+    // { href: '/relatorios', label: 'Relatórios' },
   ]
 
   return (
