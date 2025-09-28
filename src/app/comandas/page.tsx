@@ -80,6 +80,15 @@ export default function Comandas() {
               </option>
             ))}
           </select> */}
+          {/* <Select
+            value={clienteOptions.find((o) => o.value === clienteId) || null}
+            onChange={(selected) =>
+              setClienteId(selected ? selected.value : '')
+            }
+            options={clienteOptions}
+            placeholder="Selecione cliente"
+            isClearable
+          /> */}
           <Select
             value={clienteOptions.find((o) => o.value === clienteId) || null}
             onChange={(selected) =>
@@ -88,6 +97,39 @@ export default function Comandas() {
             options={clienteOptions}
             placeholder="Selecione cliente"
             isClearable
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                backgroundColor: 'var(--background)',
+                color: 'var(--foreground)',
+                borderColor: state.isFocused ? '#3b82f6' : '#d1d5db', // azul-500 ou gray-300
+                boxShadow: state.isFocused ? '0 0 0 2px #3b82f680' : 'none',
+                '&:hover': {
+                  borderColor: '#3b82f6',
+                },
+              }),
+              menu: (base) => ({
+                ...base,
+                backgroundColor: 'var(--background)',
+                color: 'var(--foreground)',
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? '#3b82f6'
+                  : 'var(--background)',
+                color: state.isFocused ? '#ffffff' : 'var(--foreground)',
+                cursor: 'pointer',
+              }),
+              singleValue: (base) => ({
+                ...base,
+                color: 'var(--foreground)',
+              }),
+              placeholder: (base) => ({
+                ...base,
+                color: '#9ca3af', // slate-400
+              }),
+            }}
           />
         </div>
 
