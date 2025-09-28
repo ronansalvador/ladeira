@@ -9,6 +9,7 @@ export default function BaileDetalhesPage() {
   const params = useParams()
   const baileId = params?.id as string
   const [baile, setBaile] = useState<Baile | null>(null)
+  const [filtro, setFiltro] = useState('')
 
   useEffect(() => {
     const fetchBaile = async () => {
@@ -21,7 +22,15 @@ export default function BaileDetalhesPage() {
 
   if (!baile) return <p className="p-4">Carregando...</p>
 
-  const total = baile.comandas?.reduce((acc, c) => acc + (c.valor || 0), 0) || 0
+  // aplica filtro por nome do cliente ou id da comanda
+  const comandasFiltradas = baile.comandas.filter(
+    (c) =>
+      c.cliente.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+      c.id.toString().includes(filtro),
+  )
+
+  const total =
+    comandasFiltradas?.reduce((acc, c) => acc + (c.valor || 0), 0) || 0
 
   return (
     <div className="p-4 max-w-3xl mx-auto space-y-6">
@@ -31,13 +40,23 @@ export default function BaileDetalhesPage() {
       </p>
 
       <h2 className="text-xl font-semibold mt-4">Comandas</h2>
+
+      {/* Input de filtro */}
+      <input
+        type="text"
+        placeholder="Buscar por nome ou número..."
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+        className="w-full p-2 border rounded mb-3"
+      />
+
       <div className="space-y-3">
-        {baile.comandas.length > 0 ? (
-          baile.comandas.map((c) => (
+        {comandasFiltradas.length > 0 ? (
+          comandasFiltradas.map((c) => (
             <div
               key={c.id}
               onClick={() => router.push(`/comandas/${c.id}`)}
-              className="border rounded p-3 flex justify-between items-center shadow-sm cursor-pointer hover:bg-gray-600 transition"
+              className="border rounded p-3 flex justify-between items-center shadow-sm cursor-pointer hover:bg-gray-100 transition"
             >
               <span>
                 {`Comanda #${c.id} – ${c.cliente.nome} - `}
