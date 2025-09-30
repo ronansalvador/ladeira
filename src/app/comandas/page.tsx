@@ -4,8 +4,10 @@ import { Baile, Cliente, Comanda } from '../types'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Select from 'react-select'
+import { useAuthGuard } from '@/app/helpers/useAuthGuard'
 
 export default function Comandas() {
+  useAuthGuard(['admin'])
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [bailes, setBailes] = useState<Baile[]>([])
   const [comandas, setComandas] = useState<Comanda[]>([])

@@ -1,14 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Produto } from '../types'
-
-// interface Produto {
-//   id: number
-//   nome: string
-//   preco: number
-// }
+import { useAuthGuard } from '@/app/helpers/useAuthGuard'
 
 export default function ProdutosPage() {
+  useAuthGuard(['admin'])
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [nome, setNome] = useState('')
   const [preco, setPreco] = useState('')
