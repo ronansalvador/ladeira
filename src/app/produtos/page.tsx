@@ -53,6 +53,17 @@ export default function ProdutosPage() {
     setEditId(produto.id)
   }
 
+  const excluirProduto = async (id: number, nome: string) => {
+    if (!confirm(`Deseja realmente excluir o produto "${nome}"?`)) return
+
+    await fetch('/api/produtos', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    })
+    loadProdutos()
+  }
+
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Gerenciar Produtos</h1>
@@ -92,12 +103,27 @@ export default function ProdutosPage() {
               <h2 className="font-semibold text-lg">{p.nome}</h2>
               <p className="text-gray-600">R$ {p.preco.toFixed(2)}</p>
             </div>
-            <button
+            {/* <button
               onClick={() => editProduto(p)}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded self-start"
             >
               Editar
-            </button>
+            </button> */}
+
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => editProduto(p)}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => excluirProduto(p.id, p.nome)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+              >
+                Excluir
+              </button>
+            </div>
           </div>
         ))}
       </div>

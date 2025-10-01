@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Comanda, Consumo, Produto } from '@/app/types'
 import { useAuthGuard } from '@/app/helpers/useAuthGuard'
+import Select from 'react-select'
 
 export default function EditComandaPage() {
   useAuthGuard(['admin'])
@@ -217,7 +218,7 @@ export default function EditComandaPage() {
         <div className=" border-1 shadow-md rounded-2xl p-4 space-y-4">
           <h2 className="text-lg font-semibold">Adicionar Consumo</h2>
           <div className="flex flex-col sm:flex-row gap-2">
-            <select
+            {/* <select
               value={produtoId}
               onChange={(e) => setProdutoId(e.target.value)}
               className="border p-2 rounded flex-1"
@@ -228,7 +229,61 @@ export default function EditComandaPage() {
                   {p.nome} – R${p.preco.toFixed(2)}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              value={
+                produtos
+                  .map((p) => ({
+                    value: p.id.toString(),
+                    label: `${p.nome} – R$ ${p.preco.toFixed(2)}`,
+                  }))
+                  .find((o) => o.value === produtoId) || null
+              }
+              onChange={(selected) =>
+                setProdutoId(selected ? selected.value : '')
+              }
+              options={produtos.map((p) => ({
+                value: p.id.toString(),
+                label: `${p.nome} – R$ ${p.preco.toFixed(2)}`,
+              }))}
+              placeholder="Selecione um produto"
+              isClearable
+              className="w-full"
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  width: '100%', // força ocupar 100% do container
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--foreground)',
+                  borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+                  boxShadow: state.isFocused ? '0 0 0 2px #3b82f680' : 'none',
+                  '&:hover': {
+                    borderColor: '#3b82f6',
+                  },
+                }),
+                menu: (base) => ({
+                  ...base,
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--foreground)',
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused
+                    ? '#3b82f6'
+                    : 'var(--background)',
+                  color: state.isFocused ? '#ffffff' : 'var(--foreground)',
+                  cursor: 'pointer',
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: 'var(--foreground)',
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: '#9ca3af',
+                }),
+              }}
+            />
             <input
               type="number"
               min={1}
