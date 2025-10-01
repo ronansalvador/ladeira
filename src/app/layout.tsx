@@ -1,8 +1,10 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
-import Menu from '../app/components/menu'
+'use client'
+
+import { usePathname } from 'next/navigation'
 import { UserProvider } from './context/userContext'
+import Menu from '../app/components/menu'
+import './globals.css'
+import { Geist, Geist_Mono } from 'next/font/google'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,23 +16,23 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: 'Gafieira da Ladeira',
-  description: 'gestão de eventos e bar',
-}
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
+  const pathname = usePathname()
+
+  // páginas sem menu
+  const hideMenu = ['/login', '/register'].includes(pathname)
+
   return (
     <html lang="en">
       <UserProvider>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Menu />
+          {!hideMenu && <Menu />}
           {children}
         </body>
       </UserProvider>
