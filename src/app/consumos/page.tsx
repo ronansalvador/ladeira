@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Baile, Comanda, Consumo } from '../types'
+import { useAuthGuard } from '../helpers/useAuthGuard'
 
 export default function BailesPage() {
+  useAuthGuard(['admin'])
   const router = useRouter()
   const [bailes, setBailes] = useState<Baile[]>([])
   const [filtroNome, setFiltroNome] = useState('')

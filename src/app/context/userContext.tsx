@@ -4,47 +4,52 @@ import saveUser from '../helpers/saveUser'
 import { User } from '../types'
 
 interface UserContextProps {
-  user: User
-  changeUser: (user: User) => void // Correção na tipagem da função changeUser
-  // useInactivity: (timeout: number) => void // Correção na tipagem da função changeUser
+  user: User | null
+  changeUser: (user: User | null) => void
+  loading: boolean
+  logout: () => void
 }
 
 const UserContext = createContext<UserContextProps>({
-  user: { name: '', email: '', token: '', role: ' ' }, // Define um estado inicial válido
+  user: null,
   changeUser: () => {},
-  // useInactivity: () => {},
+  loading: true,
+  logout: () => {},
 })
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User>({
-    name: '',
-    email: '',
-    token: '',
-    role: '',
-  })
-
-  const changeUser = async (newUser: User) => {
-    setUser(newUser) // Usa o newUser passado como parâmetro
-    // Usa o newUser passado como parâmetro
-    saveUser(JSON.stringify(newUser)) // E depois chama a função para salvar no localStorage
-  }
-
-  useEffect(() => {
-    // Isso será executado após `user` ser atualizado
-    if (user && (user.name || user.email || user.token)) {
-      saveUser(JSON.stringify(user)) // Salva no localStorage após a atualização do estado
-    }
-  }, [user]) // A dependência deste efeito é o estado `user`
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     if (savedUser) {
-      setUser(JSON.parse(savedUser)) // Carrega o estado inicial do `localStorage`
+      try {
+        setUser(JSON.parse(savedUser))
+      } catch (error) {
+        console.error('Erro ao carregar usuário do localStorage:', error)
+        localStorage.removeItem('user')
+      }
     }
+    setLoading(false)
   }, [])
 
+  const changeUser = (newUser: User | null) => {
+    setUser(newUser)
+    if (newUser?.token) {
+      saveUser(JSON.stringify(newUser))
+    } else {
+      localStorage.removeItem('user')
+    }
+  }
+
+  const logout = () => {
+    setUser(null)
+    localStorage.removeItem('user')
+  }
+
   return (
-    <UserContext.Provider value={{ user, changeUser }}>
+    <UserContext.Provider value={{ user, changeUser, loading, logout }}>
       {children}
     </UserContext.Provider>
   )

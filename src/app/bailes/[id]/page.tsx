@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { Baile } from '@/app/types'
+import { useAuthGuard } from '@/app/helpers/useAuthGuard'
 
 export default function BaileDetalhesPage() {
+  useAuthGuard(['admin'])
   const router = useRouter()
   const params = useParams()
   const baileId = params?.id as string
