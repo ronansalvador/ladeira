@@ -168,84 +168,75 @@ export default function EditComandaPage() {
       </div>
 
       {/* Lista de consumos */}
-      <div className=" border-1 shadow-md rounded-2xl p-4">
-        <h2 className="text-xl font-semibold mb-4">Consumos</h2>
-        {consumos.length === 0 && (
+
+      <div className="border-1 shadow-md rounded-2xl p-4">
+        <h2 className="text-lg font-semibold mb-4">Consumos</h2>
+        {consumos.length === 0 ? (
           <p className="text-gray-500">Nenhum consumo registrado.</p>
-        )}
-
-        <ul className="space-y-3">
-          {consumos.map((item) => (
-            <li
-              key={item.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border rounded-xl p-3"
-            >
-              <div>
-                <p className="font-medium">
-                  {item.produto?.nome ?? 'Produto não encontrado'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {item.quantidade} × R${item.produto?.preco.toFixed(2)}
-                </p>
-              </div>
-
-              {comanda.status === 'aberta' && (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() =>
-                      editarConsumo(item.id, Math.max(1, item.quantidade - 1))
-                    }
-                    // className="bg-gray-200 hover:bg-gray-300 px-3 py-1 text-lg font-semibold"
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-                  >
-                    −
-                  </button>
-                  <input
-                    type="number"
-                    min={1}
-                    value={item.quantidade}
-                    onChange={(e) =>
-                      editarConsumo(item.id, Number(e.target.value))
-                    }
-                    className="border p-1 w-20 rounded"
-                  />
-                  <button
-                    onClick={() => editarConsumo(item.id, item.quantidade + 1)}
-                    // className="bg-gray-200 hover:bg-gray-300 px-3 py-1 text-lg font-semibold"
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => removerConsumo(item.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Remover
-                  </button>
+        ) : (
+          <ul className="space-y-3">
+            {consumos.map((item) => (
+              <li
+                key={item.id}
+                // className="flex flex-col sm:flex-row justify-between items-center border rounded-xl p-4 shadow-sm hover:shadow-md transition"
+                className="grid sm:grid-cols-[1fr_auto_auto] gap-4 items-center border rounded-xl p-4 shadow-sm hover:shadow-md transition"
+              >
+                <div>
+                  <p className="font-medium">{item.produto?.nome}</p>
+                  <p className="text-sm text-gray-500">
+                    {item.quantidade} × R${item.produto?.preco.toFixed(2)}
+                  </p>
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
+                <p className="font-semibold text-green-700">
+                  R${(item.quantidade * (item.produto?.preco ?? 0)).toFixed(2)}
+                </p>
+
+                {comanda.status === 'aberta' && (
+                  <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                    <button
+                      onClick={() =>
+                        editarConsumo(item.id, Math.max(1, item.quantidade - 1))
+                      }
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    >
+                      −
+                    </button>
+                    <input
+                      type="number"
+                      min={1}
+                      value={item.quantidade}
+                      onChange={(e) =>
+                        editarConsumo(item.id, Number(e.target.value))
+                      }
+                      className="border p-1 w-16 rounded text-center"
+                    />
+                    <button
+                      onClick={() =>
+                        editarConsumo(item.id, item.quantidade + 1)
+                      }
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                    >
+                      +
+                    </button>
+                    <button
+                      onClick={() => removerConsumo(item.id)}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Form adicionar consumo + fechar comanda */}
       {comanda.status === 'aberta' && (
-        <div className=" border-1 shadow-md rounded-2xl p-4 space-y-4">
+        <div className="border-1 shadow-md rounded-2xl p-4 space-y-4">
           <h2 className="text-lg font-semibold">Adicionar Consumo</h2>
-          <div className="flex flex-col sm:flex-row gap-2">
-            {/* <select
-              value={produtoId}
-              onChange={(e) => setProdutoId(e.target.value)}
-              className="border p-2 rounded flex-1"
-            >
-              <option value="">Selecione um produto</option>
-              {produtos.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nome} – R${p.preco.toFixed(2)}
-                </option>
-              ))}
-            </select> */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
               value={
                 produtos
@@ -300,24 +291,39 @@ export default function EditComandaPage() {
                 }),
               }}
             />
-            <input
-              type="number"
-              min={1}
-              value={quantidade}
-              onChange={(e) => setQuantidade(Number(e.target.value))}
-              className="border p-2 rounded w-24"
-            />
-            <button
-              onClick={adicionarConsumo}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              +
-            </button>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={() => setQuantidade(Math.max(1, quantidade - 1))}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min={1}
+                value={quantidade}
+                onChange={(e) => setQuantidade(Number(e.target.value))}
+                className="border p-2 rounded w-24 text-center"
+              />
+              <button
+                onClick={() => setQuantidade(quantidade + 1)}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                +
+              </button>
+            </div>
           </div>
 
           <button
+            onClick={adicionarConsumo}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+          >
+            Adicionar Consumo
+          </button>
+
+          <button
             onClick={fecharComanda}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full"
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full"
           >
             Fechar Comanda
           </button>
