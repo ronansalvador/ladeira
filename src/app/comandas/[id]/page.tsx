@@ -191,6 +191,15 @@ export default function EditComandaPage() {
 
               {comanda.status === 'aberta' && (
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      editarConsumo(item.id, Math.max(1, item.quantidade - 1))
+                    }
+                    // className="bg-gray-200 hover:bg-gray-300 px-3 py-1 text-lg font-semibold"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                  >
+                    −
+                  </button>
                   <input
                     type="number"
                     min={1}
@@ -200,6 +209,13 @@ export default function EditComandaPage() {
                     }
                     className="border p-1 w-20 rounded"
                   />
+                  <button
+                    onClick={() => editarConsumo(item.id, item.quantidade + 1)}
+                    // className="bg-gray-200 hover:bg-gray-300 px-3 py-1 text-lg font-semibold"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                  >
+                    +
+                  </button>
                   <button
                     onClick={() => removerConsumo(item.id)}
                     className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
