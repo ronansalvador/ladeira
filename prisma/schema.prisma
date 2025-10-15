@@ -1,16 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -32,35 +26,22 @@ model Baile {
   id        Int       @id @default(autoincrement())
   nome      String
   data      DateTime
-  comandas  Comanda[]
   createdAt DateTime  @default(now())
+  comandas  Comanda[]
 }
-
-// model Comanda {
-//   id          Int       @id @default(autoincrement())
-//   clienteId   Int
-//   cliente     Cliente   @relation(fields: [clienteId], references: [id])
-//   tipoEntrada String
-//   consumos    Consumo[]
-//   baileId     Int
-//   baile       Baile     @relation(fields: [baileId], references: [id])
-//   status      String    @default("aberta") // aberta ou fechada
-//   createdAt   DateTime  @default(now())
-//   closedAt    DateTime?
-// }
 
 model Comanda {
   id          Int       @id @default(autoincrement())
   clienteId   Int
-  cliente     Cliente   @relation(fields: [clienteId], references: [id])
   tipoEntrada String
-  consumos    Consumo[]
   baileId     Int
-  baile       Baile     @relation(fields: [baileId], references: [id])
-  status      String    @default("aberta") // aberta ou fechada
+  status      String    @default("aberta")
   createdAt   DateTime  @default(now())
   closedAt    DateTime?
-  valorTotal  Float? // <-- novo campo
+  valorTotal  Float?
+  baile       Baile     @relation(fields: [baileId], references: [id])
+  cliente     Cliente   @relation(fields: [clienteId], references: [id])
+  consumos    Consumo[]
 }
 
 model Produto {
@@ -73,9 +54,9 @@ model Produto {
 model Consumo {
   id         Int     @id @default(autoincrement())
   comandaId  Int
-  comanda    Comanda @relation(fields: [comandaId], references: [id])
   produtoId  Int
-  produto    Produto @relation(fields: [produtoId], references: [id])
   quantidade Int
   subtotal   Float
+  comanda    Comanda @relation(fields: [comandaId], references: [id])
+  produto    Produto @relation(fields: [produtoId], references: [id])
 }

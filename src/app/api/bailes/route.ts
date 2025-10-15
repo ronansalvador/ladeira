@@ -34,10 +34,23 @@ export async function GET() {
   return NextResponse.json(data)
 }
 
+// export async function POST(req: Request) {
+//   const { nome, data } = await req.json()
+//   const baile = await prisma.baile.create({
+//     data: { nome, data: new Date(data) },
+//   })
+//   return NextResponse.json(baile)
+// }
+
 export async function POST(req: Request) {
   const { nome, data } = await req.json()
+
+  // Adiciona hora no meio do dia para evitar shift de timezone
+  const fixedDate = new Date(`${data}T12:00:00`)
+
   const baile = await prisma.baile.create({
-    data: { nome, data: new Date(data) },
+    data: { nome, data: fixedDate },
   })
+
   return NextResponse.json(baile)
 }
