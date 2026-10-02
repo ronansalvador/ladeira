@@ -60,14 +60,15 @@ Não há seed de dados configurado. O cadastro público cria usuários com perfi
 
 ## Scripts disponíveis
 
-| Comando               | Descrição                                                  |
-| --------------------- | ---------------------------------------------------------- |
-| `npm run dev`         | Inicia o Next.js em modo de desenvolvimento com Turbopack. |
-| `npm run lint`        | Executa o ESLint.                                          |
-| `npm run build`       | Gera o build de produção com Turbopack.                    |
-| `npm run start`       | Inicia o servidor de produção após o build.                |
-| `npm run test:e2e`    | Executa os testes E2E de cadastro e login.                 |
-| `npm run test:e2e:ui` | Abre a interface interativa do Playwright.                 |
+| Comando                    | Descrição                                                  |
+| -------------------------- | ---------------------------------------------------------- |
+| `npm run dev`              | Inicia o Next.js em modo de desenvolvimento com Turbopack. |
+| `npm run lint`             | Executa o ESLint.                                          |
+| `npm run build`            | Gera o build de produção com Turbopack.                    |
+| `npm run start`            | Inicia o servidor de produção após o build.                |
+| `npm run test:e2e:migrate` | Aplica migrations somente no banco E2E configurado.        |
+| `npm run test:e2e`         | Executa os testes E2E de cadastro e login.                 |
+| `npm run test:e2e:ui`      | Abre a interface interativa do Playwright.                 |
 
 ## Testes E2E
 

@@ -5,11 +5,11 @@ A suíte automatiza o fluxo real da interface: cria uma conta com e-mail aleató
 ## Preparação
 
 1. Crie um banco ou schema PostgreSQL isolado cujo nome contenha `e2e` ou `test`.
-2. Exporte a URL desse banco como `E2E_DATABASE_URL` (não a salve no repositório).
+2. Configure a URL desse banco como `E2E_DATABASE_URL` no `.env` local (não a salve no repositório). A configuração Playwright carrega esse arquivo automaticamente.
 3. Aplique as migrações nesse banco:
 
    ```bash
-   DATABASE_URL="$E2E_DATABASE_URL" npx prisma migrate deploy
+   npm run test:e2e:migrate
    ```
 
 4. Instale o navegador usado pela suíte, se ainda não estiver instalado:
@@ -18,9 +18,11 @@ A suíte automatiza o fluxo real da interface: cria uma conta com e-mail aleató
    npx playwright install chromium
    ```
 
+   Em algumas distribuições Linux antigas, o Playwright não oferece um Chromium baixável. Nesse caso, instale Google Chrome/Chromium pelo sistema; a configuração usa automaticamente `/usr/bin/google-chrome` ou `/usr/bin/chromium`, ou aceite um caminho personalizado em `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
+
 ## Executar
 
-Na raiz do projeto, com `E2E_DATABASE_URL` exportada:
+Na raiz do projeto, com `E2E_DATABASE_URL` definida no `.env`:
 
 ```bash
 npm run test:e2e
