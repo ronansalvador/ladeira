@@ -1,8 +1,12 @@
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
 // GET - lista todos os produtos
-export async function GET() {
+export async function GET(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const produtos = await prisma.produto.findMany({
       orderBy: {
@@ -10,9 +14,9 @@ export async function GET() {
       },
     })
     return NextResponse.json(produtos)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { message: 'Erro ao buscar produtos', error },
+      { message: 'Erro ao buscar produtos' },
       { status: 500 },
     )
   }
@@ -20,13 +24,29 @@ export async function GET() {
 
 // POST - cria um novo produto
 export async function POST(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const { nome, preco } = await req.json()
+    if (
+      typeof nome !== 'string' ||
+      !nome.trim() ||
+      nome.trim().length > 255 ||
+      typeof preco !== 'number' ||
+      !Number.isFinite(preco) ||
+      preco < 0
+    ) {
+      return NextResponse.json(
+        { message: 'Informe um nome e um preço válidos' },
+        { status: 400 },
+      )
+    }
 
     // cria uma nova variável a partir de nome
     const nomeNormalizado = nome
       .toLowerCase()
-      .split(' ')
+      .split(/\s+/)
       .map(
         (palavra: string) => palavra.charAt(0).toUpperCase() + palavra.slice(1),
       )
@@ -40,9 +60,9 @@ export async function POST(req: Request) {
       },
     })
     return NextResponse.json(produto)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { message: 'Erro ao criar produto', error },
+      { message: 'Erro ao criar produto' },
       { status: 500 },
     )
   }
@@ -50,14 +70,38 @@ export async function POST(req: Request) {
 
 // PUT - atualiza um produto existente
 export async function PUT(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const { id, nome, preco } = await req.json()
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      return NextResponse.json(
+        { message: 'ID do produto inválido' },
+        { status: 400 },
+      )
+    }
+    if (
+      nome !== undefined &&
+      (typeof nome !== 'string' || !nome.trim() || nome.trim().length > 255)
+    ) {
+      return NextResponse.json(
+        { message: 'Nome do produto inválido' },
+        { status: 400 },
+      )
+    }
+    if (
+      preco !== undefined &&
+      (typeof preco !== 'number' || !Number.isFinite(preco) || preco < 0)
+    ) {
+      return NextResponse.json({ message: 'Preço inválido' }, { status: 400 })
+    }
 
     // normaliza o nome, se enviado
     const nomeNormalizado = nome
       ? nome
           .toLowerCase()
-          .split(' ')
+          .split(/\s+/)
           .map(
             (palavra: string) =>
               palavra.charAt(0).toUpperCase() + palavra.slice(1),
@@ -69,14 +113,14 @@ export async function PUT(req: Request) {
       where: { id },
       data: {
         nome: nomeNormalizado,
-        preco: preco !== undefined ? Number(preco) : undefined,
+        preco,
       },
     })
 
     return NextResponse.json(produto)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { message: 'Erro ao atualizar produto', error },
+      { message: 'Erro ao atualizar produto' },
       { status: 500 },
     )
   }
@@ -84,10 +128,13 @@ export async function PUT(req: Request) {
 
 // DELETE - exclui um produto
 export async function DELETE(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const { id } = await req.json() // espera receber o id no body
 
-    if (!id) {
+    if (!Number.isSafeInteger(id) || id <= 0) {
       return NextResponse.json(
         { message: 'ID do produto é obrigatório' },
         { status: 400 },
@@ -102,9 +149,9 @@ export async function DELETE(req: Request) {
       message: 'Produto excluído com sucesso',
       produto: deletedProduto,
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { message: 'Erro ao excluir produto', error },
+      { message: 'Erro ao excluir produto' },
       { status: 500 },
     )
   }

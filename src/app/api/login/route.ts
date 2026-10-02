@@ -1,68 +1,75 @@
+import { assertAuthConfigured, createSessionResponse } from '@/lib/auth'
+import { hashPassword, verifyPassword } from '@/lib/password'
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
-import { createHash } from 'node:crypto'
-import { userCreateToken } from '../register/route'
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const jwt = require('jsonwebtoken')
-
-const compareHash = (password: string, originalHash: string) => {
-  const newHash = createHash('md5').update(password).digest('hex')
-
-  return newHash === originalHash
-}
-
-const newToken = (data: userCreateToken) => {
-  const token = jwt.sign({ data }, 'teste-ronan', {
-    expiresIn: '7d',
-    algorithm: 'HS256',
-  })
-  return token
-}
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json()
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json(
+      { message: 'Corpo JSON inválido' },
+      { status: 400 },
+    )
+  }
+
+  if (
+    !body ||
+    typeof body !== 'object' ||
+    !('email' in body) ||
+    !('password' in body) ||
+    typeof body.email !== 'string' ||
+    typeof body.password !== 'string' ||
+    !body.email.trim() ||
+    !body.password
+  ) {
+    return NextResponse.json(
+      { message: 'E-mail e senha são obrigatórios' },
+      { status: 400 },
+    )
+  }
 
   try {
+    assertAuthConfigured()
     const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
+      where: { email: body.email.trim().toLowerCase() },
     })
 
     if (!user) {
       return NextResponse.json(
-        {
-          message: 'Login e/ou senha incorretos.',
-        },
-        { status: 404 },
+        { message: 'Login e/ou senha incorretos.' },
+        { status: 401 },
       )
     }
 
-    const hashOriginal = user.password
-    const decrypt = compareHash(password, hashOriginal)
-    if (decrypt !== true) {
-      console.log('esta aqui')
+    const verification = await verifyPassword(body.password, user.password)
+    if (!verification.valid) {
       return NextResponse.json(
-        {
-          message: 'Login e/ou senha incorretos.',
-        },
-        { status: 404 },
+        { message: 'Login e/ou senha incorretos.' },
+        { status: 401 },
       )
     }
 
-    const { password: _, ...userWithoutPassword } = user
-    const token = newToken(userWithoutPassword)
+    if (verification.needsRehash) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { password: await hashPassword(body.password) },
+      })
+    }
 
-    return NextResponse.json(
-      { ...userWithoutPassword, token },
-
-      { status: 200 },
-    )
-  } catch (error) {
+    const publicUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    }
+    return createSessionResponse(publicUser, user)
+  } catch {
     return NextResponse.json(
       {
-        message: 'error',
-        error,
+        message:
+          'Não foi possível autenticar. Verifique a configuração do servidor.',
       },
       { status: 500 },
     )

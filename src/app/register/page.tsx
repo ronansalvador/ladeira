@@ -7,14 +7,6 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import PasswordInput from '../components/passwordInput'
 
-type User = {
-  id?: number
-  name: string
-  email: string
-  token: string
-  role: string
-}
-
 const RegisterPage = () => {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')

@@ -56,7 +56,7 @@ export default function Menu() {
 
           {/* Se logado mostra botão Sair, senão mostra Login */}
           <li>
-            {user?.token ? (
+            {user?.name ? (
               <button
                 onClick={logout}
                 className="text-red-600 hover:text-red-800 font-medium"
@@ -97,7 +97,7 @@ export default function Menu() {
               </li>
             ))}
             <li>
-              {user?.token ? (
+              {user?.name ? (
                 <button
                   onClick={() => {
                     logout()

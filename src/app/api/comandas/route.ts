@@ -1,7 +1,11 @@
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const comandas = await prisma.comanda.findMany({
       include: {
@@ -11,18 +15,32 @@ export async function GET() {
       },
     })
     return NextResponse.json(comandas)
-  } catch (error) {
-    return NextResponse.json({ message: 'error', error }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { message: 'Erro ao buscar comandas' },
+      { status: 500 },
+    )
   }
 }
 
 export async function POST(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const { clienteId, tipoEntrada, baileId } = await req.json()
 
-    if (!clienteId || !baileId) {
+    if (
+      !Number.isSafeInteger(clienteId) ||
+      clienteId <= 0 ||
+      !Number.isSafeInteger(baileId) ||
+      baileId <= 0 ||
+      !['normal', 'vip', 'antecipado'].includes(tipoEntrada)
+    ) {
       return NextResponse.json(
-        { message: 'clienteId e baileId são obrigatórios' },
+        {
+          message: 'Cliente, baile e tipo de entrada válidos são obrigatórios',
+        },
         { status: 400 },
       )
     }
@@ -36,7 +54,10 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ comanda })
-  } catch (error) {
-    return NextResponse.json({ message: 'error', error }, { status: 500 })
+  } catch {
+    return NextResponse.json(
+      { message: 'Erro ao abrir comanda' },
+      { status: 500 },
+    )
   }
 }

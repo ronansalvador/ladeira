@@ -3,21 +3,45 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Baile } from '../types'
 import { useAuthGuard } from '@/app/helpers/useAuthGuard'
-import { useUser } from '@/app/context/userContext'
 
 export default function BailesPage() {
   useAuthGuard(['admin'])
 
-  const { user } = useUser()
   const [bailes, setBailes] = useState<Baile[]>([])
   const [nome, setNome] = useState('')
   const [data, setData] = useState('')
   const [filtro, setFiltro] = useState('')
+  const [erro, setErro] = useState('')
 
   const fetchBailes = async () => {
-    const res = await fetch('/api/bailes')
-    const data: Baile[] = await res.json()
-    setBailes(data)
+    try {
+      const res = await fetch('/api/bailes')
+      const resposta: unknown = await res.json()
+
+      if (!res.ok) {
+        const mensagem =
+          typeof resposta === 'object' &&
+          resposta !== null &&
+          'message' in resposta
+            ? String(resposta.message)
+            : 'Não foi possível carregar os bailes.'
+        throw new Error(mensagem)
+      }
+
+      if (!Array.isArray(resposta)) {
+        throw new Error('A resposta da API de bailes não é uma lista.')
+      }
+
+      setBailes(resposta as Baile[])
+      setErro('')
+    } catch (error) {
+      setBailes([])
+      setErro(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível carregar os bailes.',
+      )
+    }
   }
 
   useEffect(() => {
@@ -79,6 +103,11 @@ export default function BailesPage() {
       </div>
 
       <h2 className="text-xl font-semibold">Lista de Bailes</h2>
+      {erro && (
+        <p className="text-red-600" role="alert">
+          {erro}
+        </p>
+      )}
       <div className="mb-4">
         <input
           type="text"

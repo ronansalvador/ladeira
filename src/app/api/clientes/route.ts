@@ -1,7 +1,11 @@
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const clientes = await prisma.cliente.findMany({
       orderBy: {
@@ -9,11 +13,10 @@ export async function GET() {
       },
     })
     return NextResponse.json(clientes)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
-        message: 'error',
-        error,
+        message: 'Erro ao buscar clientes',
       },
       { status: 500 },
     )
@@ -21,18 +24,32 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const authError = await requireAdmin(req)
+  if (authError) return authError
+
   try {
     const { nome, telefone } = await req.json()
-    // const { cliente, date, servico }: Agendamento = await req.json()
+    if (
+      typeof nome !== 'string' ||
+      !nome.trim() ||
+      nome.trim().length > 255 ||
+      typeof telefone !== 'string' ||
+      !telefone.trim() ||
+      telefone.trim().length > 40
+    ) {
+      return NextResponse.json(
+        { message: 'Nome e telefone válidos são obrigatórios' },
+        { status: 400 },
+      )
+    }
     const cliente = await prisma.cliente.create({
-      data: { nome, telefone },
+      data: { nome: nome.trim(), telefone: telefone.trim() },
     })
     return NextResponse.json({ cliente })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
-        message: 'error',
-        error,
+        message: 'Erro ao criar cliente',
       },
       { status: 500 },
     )
